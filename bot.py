@@ -4,12 +4,12 @@ import threading
 from io import BytesIO
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 
 TOKEN = "8580099046:AAFIZMXgn82MR2fPIGrULWKXbeq3Wmy_CIE"
 CHAT_ID = "@minesturbosinais"
-LINK_JOGO = "https://vitorferreira-enterprises.com/jogada-sinais"
+LINK_JOGO = "https://jogadagames.com/?ref=6"
 
 bot = Bot(token=TOKEN)
 
@@ -23,56 +23,52 @@ def rodar_servidor():
     server = HTTPServer(("0.0.0.0", 10000), Handler)
     server.serve_forever()
 
+# Posições aproximadas das 25 casas na imagem base
+POSICOES = [
+    (48, 50), (132, 50), (217, 50), (302, 50), (386, 50),
+    (48, 136), (132, 136), (217, 136), (302, 136), (386, 136),
+    (48, 222), (132, 222), (217, 222), (302, 222), (386, 222),
+    (48, 308), (132, 308), (217, 308), (302, 308), (386, 308),
+    (48, 394), (132, 394), (217, 394), (302, 394), (386, 394),
+]
+
 def criar_imagem_mines(casas):
-    tamanho = 800
-    img = Image.new("RGB", (tamanho, tamanho), (0, 120, 220))
-    draw = ImageDraw.Draw(img)
+    base = Image.open("base.png").convert("RGBA")
+    draw = ImageDraw.Draw(base)
 
-    grid_inicio = 80
-    bloco = 120
-    espaco = 18
+    try:
+        fonte = ImageFont.truetype("DejaVuSans-Bold.ttf", 58)
+    except:
+        fonte = ImageFont.load_default()
 
-    for i in range(25):
-        linha = i // 5
-        coluna = i % 5
+    for casa in casas:
+        x, y = POSICOES[casa - 1]
 
-        x = grid_inicio + coluna * (bloco + espaco)
-        y = grid_inicio + linha * (bloco + espaco)
+        # quadrado amarelo por cima da casa
+        draw.rounded_rectangle(
+            [x, y, x + 76, y + 76],
+            radius=10,
+            fill=(255, 174, 20, 255)
+        )
 
-        numero_casa = i + 1
-
-        if numero_casa in casas:
-            cor = (255, 175, 20)
-            draw.rounded_rectangle([x, y, x + bloco, y + bloco], radius=18, fill=cor)
-            draw.text((x + 38, y + 32), "★", fill="white")
-        else:
-            cor = (10, 45, 90)
-            draw.rounded_rectangle([x, y, x + bloco, y + bloco], radius=18, fill=cor)
-            draw.ellipse([x + 45, y + 45, x + 75, y + 75], fill=(40, 90, 160))
+        # estrela branca
+        draw.text((x + 18, y + 8), "★", font=fonte, fill=(255, 255, 255, 255))
 
     buffer = BytesIO()
-    img.save(buffer, format="PNG")
+    base.save(buffer, format="PNG")
     buffer.seek(0)
     return buffer
 
 def gerar_sinal():
-    casas = random.sample(range(1, 26), 4)
+    casas = random.sample(range(1, 26), 4)  # sempre aleatório
 
-    texto = """
-✅ SINAL LIBERADO ✅
-
+    texto = """✅ SINAL LIBERADO ✅
 💣 5 MINAS
 🤑 ATÉ 2 TENTATIVAS
-
 ⏰ VÁLIDO POR 15 MINUTOS
-
-🎰 LINK DO JOGO:
-https://vitorferreira-enterprises.com/jogada-sinais
-
 ⚠️ Atenção veja as mensagens fixadas:
 
-🔞 Não existe garantias de ganhos - Jogue com responsabilidade
-"""
+🔞 Não existe garantias de ganhos - Jogue com responsabilidade"""
 
     imagem = criar_imagem_mines(casas)
 
@@ -98,7 +94,7 @@ async def rodar_bot():
         except Exception as e:
             print("Erro:", e)
 
-        await asyncio.sleep(1800)  # 30 minutos
+        await asyncio.sleep(1800)  # 30 em 30 minutos
 
 threading.Thread(target=rodar_servidor).start()
 asyncio.run(rodar_bot())
