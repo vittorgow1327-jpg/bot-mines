@@ -1,2 +1,2 @@
-TOKEN = "8580099046:AAGmihPVQQ0RFJWyHSwqIJYtPylj8_F-lTc"
+TOKEN = "COLE_SEU_TOKEN_AQUI"
 CHAT_ID = "@minesturbosinais"
