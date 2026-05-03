@@ -1,0 +1,50 @@
+def criar_imagem(casas):
+    tamanho = 900
+    img = Image.new("RGB", (tamanho, tamanho), (0, 95, 200))
+    draw = ImageDraw.Draw(img)
+
+    # topo estilo jogo
+    draw.rounded_rectangle([40, 25, 360, 75], radius=22, fill=(0, 80, 150))
+    draw.text((95, 40), "Mines: 5", fill="white")
+
+    draw.rounded_rectangle([610, 25, 860, 75], radius=25, fill=(255, 200, 0))
+    draw.text((665, 40), "Next: 3.32x", fill=(20, 20, 20))
+
+    # linha verde
+    draw.rectangle([40, 90, 260, 100], fill=(0, 220, 90))
+    draw.rectangle([260, 90, 860, 100], fill=(0, 65, 150))
+
+    inicio_x = 65
+    inicio_y = 130
+    bloco = 135
+    espaco = 18
+
+    for i in range(25):
+        linha = i // 5
+        coluna = i % 5
+
+        x = inicio_x + coluna * (bloco + espaco)
+        y = inicio_y + linha * (bloco + espaco)
+
+        num = i + 1
+
+        if num in casas:
+            draw.rounded_rectangle([x, y, x+bloco, y+bloco], radius=18, fill=(255, 170, 20))
+            draw.text((x+45, y+35), "★", fill="white")
+        else:
+            draw.rounded_rectangle([x, y, x+bloco, y+bloco], radius=18, fill=(5, 35, 75))
+            draw.rounded_rectangle([x+6, y+6, x+bloco-6, y+bloco-6], radius=14, outline=(0, 130, 220), width=5)
+            draw.ellipse([x+48, y+48, x+87, y+87], fill=(45, 95, 170))
+
+    # rodapé estilo jogo
+    draw.rounded_rectangle([65, 810, 405, 865], radius=25, fill=(0, 95, 160), outline=(0, 40, 80))
+    draw.text((185, 828), "RANDOM", fill="white")
+
+    draw.text((455, 825), "↻", fill="white")
+    draw.rounded_rectangle([520, 820, 830, 860], radius=22, fill=(0, 80, 170))
+    draw.text((610, 830), "Auto Game", fill=(120, 160, 210))
+
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
