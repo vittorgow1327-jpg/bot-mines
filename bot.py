@@ -5,12 +5,11 @@ from telegram import Bot
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 
-TOKEN = "SEU_TOKEN_AQUI"
+TOKEN = "8580099046:AAFIZMXgn82MR2fPIGrULWKXbeq3Wmy_CIE"
 CHAT_ID = "@minesturbosinais"
 
 bot = Bot(token=TOKEN)
 
-# 🔹 servidor fake (pra Render não derrubar)
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -28,18 +27,18 @@ def gerar_sinal():
     return f"""
 ✅SINAL LIBERADO✅
 
-💣5 MINAS
-🤑ATÉ 2 TENTATIVAS
+💣 5 MINAS
+🤑 ATÉ 2 TENTATIVAS
 
-⭐CASAS: {' | '.join(map(str, casas))}
+⭐ CASAS: {' | '.join(map(str, casas))}
 
-⏰VALIDO ATÉ {validade.strftime('%H:%M')}
+⏰ VALIDO ATÉ {validade.strftime('%H:%M')}
 
-🎰LINK DO JOGO - https://vitorferreira-enterprises.com/jogada-sinais
+🎰 LINK DO JOGO - https://vitorferreira-enterprises.com/jogada-sinais
 
-⚠️Atenção veja as mensagens fixadas:
+⚠️ Atenção veja as mensagens fixadas:
 
-🔞Não existe garantias de ganhos - Jogue com responsabilidades
+🔞 Não existe garantias de ganhos - Jogue com responsabilidades
 """
 
 async def rodar_bot():
@@ -52,8 +51,6 @@ async def rodar_bot():
 
         await asyncio.sleep(1200)
 
-# roda servidor em paralelo
 threading.Thread(target=rodar_servidor).start()
 
-# roda bot
 asyncio.run(rodar_bot())
